@@ -1,9 +1,15 @@
 <?php
 
+use App\Http\Controllers\PdfController;
 use App\Http\Controllers\ProfileController;
 use App\Models\Buku;
 use App\Models\Kategori;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Str;
+use Laravel\Socialite\Facades\Socialite;
 
 Route::get('/', function () {
     return view('landing');
@@ -33,6 +39,25 @@ Route::middleware('auth')->group(function () {
         return redirect()->route('kategori');
     })->name('kategori.store');
 
+    Route::get('/kategori/{id}/edit', function ($id) {
+        $kategori = Kategori::findOrFail($id);
+        return view('kategori.edit', compact('kategori'));
+    })->name('kategori.edit');
+
+    Route::put('/kategori/{id}', function (\Illuminate\Http\Request $request, $id) {
+        $kategori = Kategori::findOrFail($id);
+        $kategori->update([
+            'nama_kategori' => $request->nama_kategori
+        ]);
+
+        return redirect()->route('kategori');
+    })->name('kategori.update');
+
+    Route::delete('/kategori/{id}', function ($id) {
+        Kategori::destroy($id);
+        return redirect()->route('kategori');
+    })->name('kategori.destroy');
+
     Route::get('/buku', function () {
         $data = Buku::with('kategori')->get();
         return view('buku.index', compact('data'));
@@ -55,9 +80,99 @@ Route::middleware('auth')->group(function () {
         return redirect()->route('buku');
     })->name('buku.store');
 
+    Route::get('/buku/{id}/edit', function ($id) {
+        $buku = Buku::findOrFail($id);
+        $kategori = Kategori::all();
+        return view('buku.edit', compact('buku', 'kategori'));
+    })->name('buku.edit');
+
+    Route::put('/buku/{id}', function (\Illuminate\Http\Request $request, $id) {
+
+        $buku = Buku::findOrFail($id);
+
+        $buku->update([
+            'kode' => $request->kode,
+            'judul' => $request->judul,
+            'pengarang' => $request->pengarang,
+            'kategori_id' => $request->kategori_id
+        ]);
+
+        return redirect()->route('buku');
+    })->name('buku.update');
+
+    Route::delete('/buku/{id}', function ($id) {
+        Buku::destroy($id);
+        return redirect()->route('buku');
+    })->name('buku.destroy');
+
+    Route::get('/generate-sertifikat', [PdfController::class, 'sertifikat'])->name('pdf.sertifikat');
+    Route::get('/generate-undangan', [PdfController::class, 'undangan'])->name('pdf.undangan');
+
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
 require __DIR__ . '/auth.php';
+
+Route::get('/auth/google', function () {
+    return Socialite::driver('google')->redirect();
+})->name('google.login');
+
+Route::get('/auth/google/callback', function () {
+    $googleUser = Socialite::driver('google')->stateless()->user();
+
+    // cek apakah user sudah ada
+    $user = User::where('id_google', $googleUser->id)->first();
+
+    if (!$user) {
+        // jika user belum ada, buat user baru
+        $user = User::create([
+            'name' => $googleUser->name,
+            'email' => $googleUser->email,
+            'id_google' => $googleUser->id,
+            'password' => bcrypt(Str::random(16)), // random password karena login pakai Google
+        ]);
+    }
+
+    // Generate OTP 6 digit
+    $otp = rand(100000, 999999);
+    $user->otp = $otp;
+    $user->save();
+
+    // Kirim OTP ke email
+    Mail::raw("Kode OTP anda: $otp", function ($message) use ($user) {
+        $message->to($user->email)
+            ->subject("Kode OTP Login");
+    });
+
+    // simpan user id di session sementara
+    session(['otp_user_id' => $user->id]);
+
+    return redirect('/verify-otp');
+});
+
+Route::get('/verify-otp', function () {
+    return view('auth.verify-otp');
+});
+
+Route::post('/verify-otp', function (Illuminate\Http\Request $request) {
+    // dd($request->all());
+    $request->validate([
+        'otp' => 'required|digits:6',
+    ]);
+
+    $user = User::find(session('otp_user_id'));
+
+    if ($user && $user->otp === $request->otp) {
+        // OTP valid, login user
+        Auth::login($user);
+        $user->otp = null; // hapus OTP setelah berhasil
+        $user->save();
+        session()->forget('otp_user_id');
+
+        return redirect('/dashboard');
+    }
+
+    return back()->withErrors(['otp' => 'Kode OTP salah']);
+});

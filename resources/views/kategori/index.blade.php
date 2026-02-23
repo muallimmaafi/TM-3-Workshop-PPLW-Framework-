@@ -25,7 +25,23 @@
                 <tr>
                     <td>{{ $loop->iteration }}</td>
                     <td>{{ $item->nama_kategori }}</td>
-                    <td></td>
+                    <td>
+                        <a href="{{ route('kategori.edit', $item->id) }}"
+                            class="btn btn-sm btn-warning">
+                            Edit
+                        </a>
+
+                        <form action="{{ route('kategori.destroy', $item->id) }}"
+                            method="POST"
+                            style="display:inline;">
+                            @csrf
+                            @method('DELETE')
+                            <button class="btn btn-sm btn-danger"
+                                onclick="return confirm('Yakin hapus?')">
+                                Hapus
+                            </button>
+                        </form>
+                    </td>
                 </tr>
                 @endforeach
             </tbody>
