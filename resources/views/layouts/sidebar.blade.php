@@ -49,5 +49,12 @@
             </a>
         </li>
 
+        <li class="nav-item {{ request()->routeIs('barang.index') ? 'active' : '' }}">
+            <a class="nav-link" href="{{ route('barang.index') }}">
+                <span class="menu-title">Barang</span>
+                <i class="mdi mdi-cube-outline menu-icon"></i>
+            </a>
+        </li>
+
     </ul>
 </nav>

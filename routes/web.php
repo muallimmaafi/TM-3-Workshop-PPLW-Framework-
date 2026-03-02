@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\BarangController;
 use App\Http\Controllers\PdfController;
 use App\Http\Controllers\ProfileController;
 use App\Models\Buku;
@@ -111,6 +112,17 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    Route::get('/barang', [BarangController::class, 'index'])->name('barang.index');
+    Route::get('/barang/data', [BarangController::class, 'data'])->name('barang.data');
+    Route::get('/barang/create', [BarangController::class, 'create'])->name('barang.create');
+    Route::post('/barang/store', [BarangController::class, 'store'])->name('barang.store');
+
+    Route::get('/barang/edit/{id}', [BarangController::class, 'edit'])->name('barang.edit');
+    Route::post('/barang/update/{id}', [BarangController::class, 'update'])->name('barang.update');
+
+    Route::delete('/barang/delete/{id}', [BarangController::class, 'destroy'])->name('barang.delete');
+    Route::post('/barang/cetak', [BarangController::class, 'cetak'])->name('barang.cetak');
 });
 
 require __DIR__ . '/auth.php';
