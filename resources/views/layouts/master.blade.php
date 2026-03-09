@@ -5,6 +5,7 @@
     @include('layouts.header')
 
     <link rel="stylesheet" href="{{ asset('template/assets/vendors/css/vendor.bundle.base.css') }}">
+    <link rel="stylesheet" href="{{ asset('template/assets/vendors/mdi/css/materialdesignicons.min.css') }}">
     <link rel="stylesheet" href="{{ asset('template/assets/css/style.css') }}">
 
     @stack('style-page')
@@ -12,33 +13,35 @@
 
 <body>
 
-<div class="container-scroller">
+    <div class="container-scroller">
 
-    @include('layouts.navbar')
+        @include('layouts.navbar')
 
-    <div class="container-fluid page-body-wrapper">
+        <div class="container-fluid page-body-wrapper">
 
-        @include('layouts.sidebar')
+            @include('layouts.sidebar')
 
-        <div class="main-panel">
-            <div class="content-wrapper">
+            <div class="main-panel">
+                <div class="content-wrapper">
 
-                @yield('content')
+                    @yield('content')
+
+                </div>
+
+                @include('layouts.footer')
 
             </div>
-
-            @include('layouts.footer')
-
         </div>
     </div>
-</div>
 
-<script src="{{ asset('template/assets/vendors/js/vendor.bundle.base.js') }}"></script>
-<script src="{{ asset('template/assets/js/off-canvas.js') }}"></script>
-<script src="{{ asset('template/assets/js/misc.js') }}"></script>
-<script src="{{ asset('template/assets/js/dashboard.js') }}"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="{{ asset('template/assets/vendors/js/vendor.bundle.base.js') }}"></script>
+    <script src="{{ asset('template/assets/js/off-canvas.js') }}"></script>
+    <script src="{{ asset('template/assets/js/misc.js') }}"></script>
+    <script src="{{ asset('template/assets/js/dashboard.js') }}"></script>
 
-@stack('js-page')
+    @stack('js-page')
 
 </body>
+
 </html>

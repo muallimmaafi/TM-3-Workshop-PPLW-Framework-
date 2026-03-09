@@ -123,6 +123,18 @@ Route::middleware('auth')->group(function () {
 
     Route::delete('/barang/delete/{id}', [BarangController::class, 'destroy'])->name('barang.delete');
     Route::post('/barang/cetak', [BarangController::class, 'cetak'])->name('barang.cetak');
+
+    Route::get('/table/index', function () {
+        return view('table.index');
+    })->name('table.index');
+
+    Route::get('/datatables/index', function () {
+        return view('datatables.index');
+    })->name('datatables.index');
+
+    Route::get('/select-kota', function () {
+        return view('select-kota');
+    })->name('select-kota');
 });
 
 require __DIR__ . '/auth.php';

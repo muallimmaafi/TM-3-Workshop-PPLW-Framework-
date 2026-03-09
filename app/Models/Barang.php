@@ -17,4 +17,6 @@ class Barang extends Model
         'nama_barang',
         'harga'
     ];
+
+    public $timestamps = false;
 }

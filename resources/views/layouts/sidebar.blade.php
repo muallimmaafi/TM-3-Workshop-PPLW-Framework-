@@ -56,5 +56,26 @@
             </a>
         </li>
 
+        <li class="nav-item {{ Route::currentRouteName() == 'table.index' ? 'active' : '' }}">
+            <a class="nav-link" href="{{ route('table.index') }}">
+                <span class="menu-title">Barang (HTML Table)</span>
+                <i class="mdi mdi-table menu-icon"></i>
+            </a>
+        </li>
+
+        <li class="nav-item {{ Route::currentRouteName() == 'datatables.index' ? 'active' : '' }}">
+            <a class="nav-link" href="{{ route('datatables.index') }}">
+                <span class="menu-title">Barang (DataTables)</span>
+                <i class="mdi mdi-table-large menu-icon"></i>
+            </a>
+        </li>
+
+        <li class="nav-item {{ request()->routeIs('select-kota') ? 'active' : '' }}">
+            <a class="nav-link" href="{{ route('select-kota') }}">
+                <span class="menu-title">Kota</span>
+                <i class="mdi mdi-map-marker menu-icon"></i>
+             </a>
+        </li>
+
     </ul>
 </nav>

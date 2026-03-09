@@ -10,7 +10,7 @@ body {
 }
 
 .container {
-    position: absolute;
+    position:  absolute;
     left: 5mm;
     top: 13mm;
     width: 200mm;
